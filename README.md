@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌸 Jurnal Kenangan (Memory Journal)
 
-## Getting Started
+Sebuah aplikasi jurnal foto harian berbasis web yang dirancang dengan estetika premium dan minimalis. Aplikasi ini memungkinkan pengguna untuk menyimpan satu kenangan indah setiap hari dalam bentuk foto dan catatan singkat, yang ditampilkan dalam antarmuka kalender yang interaktif.
 
-First, run the development server:
+![Design Reference](public/bg-aesthetic.png)
 
+## ✨ Fitur Utama
+
+- **Kalender Interaktif**: Navigasi bulan ke bulan dengan tampilan hari yang bersih.
+- **Upload Kenangan**: Simpan foto dan cerita singkat untuk setiap tanggal.
+- **Manajemen Memori**: Lihat detail foto, edit teks cerita, atau hapus kenangan yang sudah ada.
+- **Estetika Premium**: Desain bertema *warm cream* yang elegan dengan tipografi serif (Lora) dan sans-serif (Outfit).
+- **Responsive Design**: Tampilan yang dioptimalkan untuk perangkat desktop maupun smartphone.
+
+## 🚀 Teknologi yang Digunakan
+
+- **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
+- **Bahasa**: TypeScript
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Database**: [Aiven MySQL](https://aiven.io/)
+- **Penyimpanan Foto**: [Cloudinary](https://cloudinary.com/)
+- **Styling**: CSS Modules & Vanilla CSS
+- **Font**: Google Fonts (Lora, Outfit, Caveat)
+
+## 🛠️ Persiapan Lingkungan (Setup)
+
+### 1. Prasyarat
+Pastikan Anda sudah menginstal:
+- Node.js (versi 18 ke atas)
+- npm atau yarn
+
+### 2. Instalasi Dependensi
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Konfigurasi Environment (`.env.local`)
+Buat file `.env.local` di akar direktori dan tambahkan kredensial berikut:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+# Database (Aiven MySQL)
+DATABASE_URL="mysql://username:password@host:port/defaultdb"
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Cloudinary
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"
+CLOUDINARY_API_KEY="your_api_key"
+CLOUDINARY_API_SECRET="your_api_secret"
+```
 
-## Learn More
+### 4. Sinkronisasi Database
+```bash
+npx prisma db push
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🏃 Menjalankan Aplikasi
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Jalankan server pengembangan:
+```bash
+npm run dev
+```
+Buka [http://localhost:3000](http://localhost:3000) di browser Anda.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 Struktur Folder Utama
 
-## Deploy on Vercel
+- `src/app`: Logika halaman dan routing (Next.js App Router).
+- `src/components`: Komponen UI seperti Kalender dan Modal.
+- `src/lib`: Konfigurasi library (Prisma, Cloudinary).
+- `prisma/`: Definisi skema database.
+- `public/`: Aset statis seperti background dan ikon.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📝 Lisensi
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Proyek ini dibuat untuk keperluan belajar dan dokumentasi pribadi.
+
+---
+*Dibuat dengan ❤️ oleh Antigravity untuk alsyaarscptr.*
