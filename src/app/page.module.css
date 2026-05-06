@@ -1,0 +1,465 @@
+/* ============================================================
+   page.module.css — Photo Journal
+   ============================================================ */
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.main {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate; /* Create a new stacking context */
+}
+
+/* ── Aesthetic Background ─────────────────────────────── */
+.staticBackground {
+  position: fixed;
+  inset: 0;
+  background-image: url('/bg-aesthetic.png');
+  background-size: cover;
+  background-position: center;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(253, 248, 243, 0.4); /* Subtle warm tint */
+  pointer-events: none;
+}
+
+/* ── Content wrapper ─────────────────────────────────────────── */
+.contentContainer {
+  position: relative;
+  z-index: 10;
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 4rem;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+.calendarSection {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Calendar Card ───────────────────────────────────────────── */
+.calendarCard {
+  background-color: #ffffff;
+  border-radius: 32px;
+  box-shadow: 0 10px 40px rgba(74, 55, 40, 0.06);
+  width: 100%;
+  padding: 3rem;
+}
+
+/* ── Calendar header ─────────────────────────────────────────── */
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.monthWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.calendarTitle {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.leafIcon {
+  display: flex;
+  align-items: center;
+  opacity: 0.8;
+}
+
+.leafFlipped {
+  transform: scaleX(-1);
+}
+
+.navBtn {
+  color: var(--text-muted);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  background: none;
+  touch-action: manipulation;
+}
+
+.navBtn:hover {
+  background-color: var(--accent-light);
+  color: var(--text-color);
+}
+
+/* ── Calendar grid ───────────────────────────────────────────── */
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+
+.dayName {
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Blank leading cells */
+.dayCellBlank {
+  aspect-ratio: 1;
+}
+
+/* Day cells */
+.dayCell {
+  aspect-ratio: 1;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-serif);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+}
+
+.dayCell:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(74, 55, 40, 0.08);
+}
+
+.dayCell:active {
+  transform: scale(0.96);
+}
+
+/* Day with a photo */
+.dayCellFilled {
+  background-color: #fff9f5;
+  border-color: #dcc7b8;
+}
+
+/* Today */
+.dayCellToday {
+  border-color: var(--primary-color);
+  border-width: 1.5px;
+}
+
+.dateNumber {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-color);
+  z-index: 2;
+  position: relative;
+}
+
+.cellPlus {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: 0.9rem;
+  color: #dcc7b8;
+  font-weight: 300;
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.dayCell:hover .cellPlus {
+  color: var(--primary-color);
+}
+
+/* Photo thumbnail inside day cell */
+.photoIndicator {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.15; /* Very subtle in the background like the reference */
+  border-radius: 11px;
+  transition: opacity 0.3s ease;
+}
+
+.dayCellFilled:hover .photoIndicator {
+  opacity: 0.25;
+}
+
+/* ── Legend ──────────────────────────────────────────────────── */
+.calendarLegend {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.legendBoxMemory {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: #dcc7b8;
+}
+
+.legendBoxToday {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1.5px solid var(--primary-color);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* ── Modal Overlay (shared) ──────────────────────────────────── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(74, 55, 40, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── View Memory Modal ───────────────────────────────────────── */
+.viewModalContent {
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.closeBtn {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  border: none;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.1);
+}
+
+/* Polaroid card */
+.polaroidCard {
+  background: #fff;
+  padding: 20px 20px 24px;
+  border-radius: 4px;
+  box-shadow: 0 20px 50px rgba(74, 55, 40, 0.15);
+  width: min(440px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.polaroidImageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 2px;
+  background-color: var(--border-color);
+}
+
+.polaroidCaption {
+  font-family: var(--font-hand);
+  font-size: 1.6rem;
+  color: var(--text-color);
+  text-align: center;
+  line-height: 1.4;
+  padding: 0 4px;
+}
+
+.polaroidDate {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Modal Actions (Edit/Delete) ───────────────────────────── */
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--accent-light);
+  padding-top: 1.5rem;
+}
+
+.actionBtn {
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.editBtn {
+  color: var(--primary-color);
+  background-color: var(--accent-light);
+  border: 1px solid var(--border-color);
+}
+
+.editBtn:hover {
+  background-color: var(--border-color);
+}
+
+.deleteBtn {
+  color: #c62828;
+  background-color: #ffebee;
+}
+
+.deleteBtn:hover {
+  background-color: #ffcdd2;
+}
+
+.editTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  resize: vertical;
+  min-height: 100px;
+  background-color: var(--accent-light);
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+.editActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.saveBtn {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.cancelBtn {
+  background-color: #eee;
+  color: #666;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+
+/* ── Responsive Design (Smartphone) ─────────────────────────── */
+@media (max-width: 600px) {
+  .contentContainer {
+    padding: 2rem 1rem;
+  }
+
+  .calendarCard {
+    padding: 1.5rem 1rem;
+    border-radius: 20px;
+  }
+
+  .monthWrapper {
+    gap: 0.8rem;
+  }
+
+  .calendarTitle {
+    font-size: 1.4rem;
+  }
+
+  .leafIcon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .calendarGrid {
+    gap: 6px;
+  }
+
+  .dayName {
+    font-size: 0.75rem;
+    padding-bottom: 0.8rem;
+  }
+
+  .dayCell {
+    padding: 6px;
+    border-radius: 8px;
+  }
+
+  .dateNumber {
+    font-size: 0.85rem;
+  }
+
+  .cellPlus {
+    bottom: 4px;
+    right: 6px;
+    font-size: 0.75rem;
+  }
+
+  .calendarLegend {
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
