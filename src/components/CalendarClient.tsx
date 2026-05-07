@@ -15,14 +15,8 @@ interface Memory {
 
 interface CalendarClientProps {
   memories: Memory[];
+  isReadOnly?: boolean;
 }
-
-// Indonesian month & day names
-const MONTH_NAMES = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
-];
-const DAY_NAMES = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
 // ──────────────────────────────────────────────────────────────
 // View Memory Modal
@@ -30,9 +24,11 @@ const DAY_NAMES = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 function ViewMemoryModal({
   memory,
   onClose,
+  isReadOnly = false,
 }: {
   memory: Memory;
   onClose: () => void;
+  isReadOnly?: boolean;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedCaption, setEditedCaption] = useState(memory.caption || '');
@@ -127,22 +123,24 @@ function ViewMemoryModal({
               )}
               <p className={styles.polaroidDate}>{dateLabel}</p>
 
-              {/* Edit/Delete Actions */}
-              <div className={styles.modalActions}>
-                <button 
-                  className={`${styles.actionBtn} ${styles.editBtn}`}
-                  onClick={() => setIsEditing(true)}
-                >
-                  ✏️ Edit Teks
-                </button>
-                <button 
-                  className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? 'Menghapus...' : '🗑️ Hapus'}
-                </button>
-              </div>
+              {/* Edit/Delete Actions - Only show if NOT read only */}
+              {!isReadOnly && (
+                <div className={styles.modalActions}>
+                  <button 
+                    className={`${styles.actionBtn} ${styles.editBtn}`}
+                    onClick={() => setIsEditing(true)}
+                  >
+                    ✏️ Edit Teks
+                  </button>
+                  <button 
+                    className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? 'Menghapus...' : '🗑️ Hapus'}
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -151,27 +149,29 @@ function ViewMemoryModal({
   );
 }
 
-
 // ──────────────────────────────────────────────────────────────
 // Main CalendarClient
 // ──────────────────────────────────────────────────────────────
-export default function CalendarClient({ memories }: CalendarClientProps) {
+export default function CalendarClient({ memories, isReadOnly = false }: CalendarClientProps) {
   const [viewYear, setViewYear] = useState(2026); 
-  const [viewMonth, setViewMonth] = useState(4); // Mei (0-indexed)
+  const [viewMonth, setViewMonth] = useState(4); 
 
   const [selectedDateStr, setSelectedDateStr] = useState<string | null>(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [viewingMemory, setViewingMemory] = useState<Memory | null>(null);
 
-  // Initialize date only on client to avoid hydration mismatch
   useEffect(() => {
     const now = new Date();
     setViewYear(now.getFullYear());
     setViewMonth(now.getMonth());
-    console.log('--- Client Hydration Complete ---');
   }, []);
 
-  // ── Helpers ──────────────────────────────────────────────────
+  const MONTH_NAMES = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  ];
+  const DAY_NAMES = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+
   const getMemoryForDate = (year: number, month: number, day: number) => {
     return memories.find((m) => {
       const d = new Date(m.date);
@@ -184,10 +184,8 @@ export default function CalendarClient({ memories }: CalendarClientProps) {
   };
 
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-  // 0=Sun, 1=Mon, ... getDay() of the 1st of the month
   const firstDayOfWeek = new Date(viewYear, viewMonth, 1).getDay();
 
-  // ── Navigation ───────────────────────────────────────────────
   const prevMonth = () => {
     if (viewMonth === 0) {
       setViewMonth(11);
@@ -215,12 +213,11 @@ export default function CalendarClient({ memories }: CalendarClientProps) {
     );
   };
 
-  // ── Click handlers ───────────────────────────────────────────
   const handleDayClick = (day: number) => {
     const memory = getMemoryForDate(viewYear, viewMonth, day);
     if (memory) {
       setViewingMemory(memory);
-    } else {
+    } else if (!isReadOnly) {
       const mm = String(viewMonth + 1).padStart(2, '0');
       const dd = String(day).padStart(2, '0');
       setSelectedDateStr(`${viewYear}-${mm}-${dd}`);
@@ -228,16 +225,12 @@ export default function CalendarClient({ memories }: CalendarClientProps) {
     }
   };
 
-  // ── Calendar grid cells ──────────────────────────────────────
-  // Leading empty cells so day 1 lands on the right column
   const leadingBlanks = Array.from({ length: firstDayOfWeek });
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   return (
     <>
-      {/* ── Calendar Card ─────────────────────────────────── */}
       <div className={styles.calendarCard}>
-        {/* Header */}
         <div className={styles.calendarHeader}>
           <button className={styles.navBtn} onClick={prevMonth} aria-label="Bulan sebelumnya">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -258,7 +251,6 @@ export default function CalendarClient({ memories }: CalendarClientProps) {
           </button>
         </div>
 
-        {/* Day-name row */}
         <div className={styles.calendarGrid}>
           {DAY_NAMES.map((d) => (
             <div key={d} className={styles.dayName}>
@@ -266,12 +258,10 @@ export default function CalendarClient({ memories }: CalendarClientProps) {
             </div>
           ))}
 
-          {/* Leading blank cells */}
           {leadingBlanks.map((_, i) => (
             <div key={`blank-${i}`} className={styles.dayCellBlank} />
           ))}
 
-          {/* Day cells */}
           {days.map((day) => {
             const memory = getMemoryForDate(viewYear, viewMonth, day);
             const today_ = isToday(day);
@@ -285,10 +275,12 @@ export default function CalendarClient({ memories }: CalendarClientProps) {
                   styles.dayCell,
                   memory ? styles.dayCellFilled : '',
                   today_ ? styles.dayCellToday : '',
+                  isReadOnly && !memory ? styles.dayCellDisabled : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}
                 onClick={() => handleDayClick(day)}
+                disabled={isReadOnly && !memory}
                 aria-label={
                   memory
                     ? `Lihat kenangan ${day} ${MONTH_NAMES[viewMonth]} ${viewYear}`
@@ -304,13 +296,12 @@ export default function CalendarClient({ memories }: CalendarClientProps) {
                   />
                 )}
 
-                <span className={styles.cellPlus}>+</span>
+                {!isReadOnly && !memory && <span className={styles.cellPlus}>+</span>}
               </button>
             );
           })}
         </div>
 
-        {/* Legend */}
         <div className={styles.calendarLegend}>
           <div className={styles.legendBoxMemory} />
           <span>Ada kenangan</span>
@@ -319,8 +310,7 @@ export default function CalendarClient({ memories }: CalendarClientProps) {
         </div>
       </div>
 
-      {/* ── Upload Modal ───────────────────────────────────── */}
-      {isUploadOpen && (
+      {!isReadOnly && isUploadOpen && (
         <UploadModal
           isOpen={isUploadOpen}
           onClose={() => setIsUploadOpen(false)}
@@ -328,11 +318,11 @@ export default function CalendarClient({ memories }: CalendarClientProps) {
         />
       )}
 
-      {/* ── View Memory Modal ──────────────────────────────── */}
       {viewingMemory && (
         <ViewMemoryModal
           memory={viewingMemory}
           onClose={() => setViewingMemory(null)}
+          isReadOnly={isReadOnly}
         />
       )}
     </>

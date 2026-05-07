@@ -3,9 +3,15 @@
 import prisma from '@/lib/prisma';
 import cloudinary from '@/lib/cloudinary';
 import { revalidatePath } from 'next/cache';
+import { auth } from '@/auth';
 
 export async function uploadMemory(formData: FormData) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new Error('Anda harus login untuk mengupload memori.');
+    }
+
     const file = formData.get('file') as File;
     const dateStr = formData.get('date') as string;
     const caption = formData.get('caption') as string;
@@ -40,6 +46,7 @@ export async function uploadMemory(formData: FormData) {
         date,
         imageUrl,
         caption: caption || null,
+        userId: session.user.id,
       },
     });
 
@@ -55,6 +62,18 @@ export async function uploadMemory(formData: FormData) {
 
 export async function deleteMemory(id: string) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error('Unauthorized');
+
+    // Pastikan user adalah pemilik memori
+    const memory = await prisma.memory.findUnique({
+      where: { id },
+    });
+
+    if (!memory || memory.userId !== session.user.id) {
+      throw new Error('Anda tidak memiliki izin untuk menghapus memori ini.');
+    }
+
     await prisma.memory.delete({
       where: { id },
     });
@@ -68,6 +87,18 @@ export async function deleteMemory(id: string) {
 
 export async function updateMemory(id: string, caption: string) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) throw new Error('Unauthorized');
+
+    // Pastikan user adalah pemilik memori
+    const memory = await prisma.memory.findUnique({
+      where: { id },
+    });
+
+    if (!memory || memory.userId !== session.user.id) {
+      throw new Error('Anda tidak memiliki izin untuk mengubah memori ini.');
+    }
+
     await prisma.memory.update({
       where: { id },
       data: { caption },
@@ -79,4 +110,3 @@ export async function updateMemory(id: string, caption: string) {
     return { success: false, error: error.message };
   }
 }
-

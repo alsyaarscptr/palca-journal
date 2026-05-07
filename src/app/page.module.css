@@ -45,6 +45,50 @@
   text-align: center;
 }
 
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.socialLink {
+  color: #4a3e3e;
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.socialLink:hover {
+  border-color: #4a3e3e;
+}
+
+.logoutBtn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background: var(--accent-light);
+  color: var(--text-color);
+  border-color: var(--text-color);
+}
+
 .calendarSection {
   display: flex;
   justify-content: center;
@@ -173,6 +217,17 @@
 .dayCellToday {
   border-color: var(--primary-color);
   border-width: 1.5px;
+}
+
+.dayCellDisabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.dayCellDisabled:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-color);
 }
 
 .dateNumber {
