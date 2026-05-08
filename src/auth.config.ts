@@ -1,18 +1,7 @@
 import type { NextAuthConfig } from "next-auth"
-import Credentials from "next-auth/providers/credentials"
 
 export const authConfig = {
-  providers: [
-    // We add an empty array here because the actual Credentials authorize 
-    // needs Prisma, but the middleware just needs to know the providers exist.
-    // Actually, for middleware, we can just leave it as an empty array or 
-    // define the provider without the heavy logic.
-    Credentials({
-      async authorize() {
-        return null
-      }
-    })
-  ],
+  providers: [], // Empty array is enough for middleware
   pages: {
     signIn: "/login",
   },
@@ -22,7 +11,9 @@ export const authConfig = {
       const isAuthRoute = nextUrl.pathname === "/login" || nextUrl.pathname === "/register";
       
       if (isAuthRoute) {
-        if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
+        if (isLoggedIn) {
+          return Response.redirect(new URL("/", nextUrl));
+        }
         return true;
       }
 
